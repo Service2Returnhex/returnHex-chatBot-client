@@ -43,10 +43,14 @@ const Signin = () => {
       );
       const token = response?.data?.data?.accessToken;
       if (token) {
-        localStorage.setItem("accessToken", token);
+        typeof window !== "undefined"
+          ? localStorage.setItem("accessToken", token) : null;
       }
       const role = response?.data?.data?.userRole;
-      if (role) localStorage.setItem("user", JSON.stringify(role));
+      if (role) {
+        typeof window !== "undefined"
+        ? localStorage.setItem("user", JSON.stringify(role)) : null;
+      }
       toast.success(response?.data?.message ?? "Logged in");
       if (role == "admin") {
         router.push("/admin-dashboard");

@@ -35,12 +35,15 @@ type TokenUsageResponse = {
     range?: string;
     points: TokenUsagePoint[];
 };
+interface PageProps {
+    id: string
+}
 
-export default function TokenUsagePage(params: any) {
-    const shopId = localStorage.getItem("pageId")
-    console.log("params", params.id);
+export default function TokenUsagePage({ id }: PageProps) {
+    // const shopId = localStorage.getItem("pageId")
+    console.log("params", id);
     // console.log("shop id",shopId);
-    const { tData, tLoading, tError, refetch } = useMsgCounts(params.id);
+    const { tData, tLoading, tError, refetch } = useMsgCounts(id);
 
     const totalUsed = tData?.totalUsage ?? 0;
     const totalAvailable = tData?.totalTokensAvailable ?? 0;
@@ -57,7 +60,7 @@ export default function TokenUsagePage(params: any) {
     const [usage, setUsage] = useState<TokenUsageResponse | null>(null);
     // const [loading, setLoading] = useState(false);
 
-    const { data, loading, error } = useFetchUsage(params.id, opts);
+    const { data, loading, error } = useFetchUsage(id, opts);
 
     const points = data?.points ?? [];
     const used = data?.totalTokensUsed ?? 0;

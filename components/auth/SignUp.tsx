@@ -74,8 +74,10 @@ const Signup = () => {
       );
       console.log("response", response);
 
-      localStorage.setItem("authToken", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      typeof window !== "undefined"
+        ? localStorage.setItem("authToken", response.data.token) : null;
+      typeof window !== "undefined"
+        ? localStorage.setItem("user", JSON.stringify(response.data.user)) : null;
       toast.success("Account created successfully!");
       router.push("/login");
     } catch (error) {

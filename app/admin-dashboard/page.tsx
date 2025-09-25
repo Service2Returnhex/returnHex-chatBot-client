@@ -7,16 +7,16 @@ import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 type Props = {
   status?: "online" | "degraded" | "offline";
 };
-export default function DashboardPage({ status = "online" }: Props) {
-
+export default function DashboardPage() {
+  const status: "online" | "degraded" | "offline" = "online";
   const getStatusClasses = () => {
     switch (status) {
       case "online":
         return "bg-emerald-600 text-white";
-      case "degraded":
-        return "bg-yellow-500 text-black";
-      case "offline":
-        return "bg-red-600 text-white";
+      // case "degraded":
+      //   return "bg-yellow-500 text-black";
+      // case "offline":
+      //   return "bg-red-600 text-white";
       default:
         return "bg-gray-500 text-white";
     }

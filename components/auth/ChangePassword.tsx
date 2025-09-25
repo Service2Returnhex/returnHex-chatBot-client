@@ -43,7 +43,8 @@ const ChangePassword = () => {
     }
 
     setLoading(true);
-    const token = localStorage.getItem("accessToken");
+    const token = typeof window !== "undefined"
+      ? localStorage.getItem("accessToken") : null;
     console.log("token", token);
     try {
       await axios.post(

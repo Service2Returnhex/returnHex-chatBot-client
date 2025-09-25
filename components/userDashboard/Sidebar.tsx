@@ -6,8 +6,11 @@ import {
   Brain,
   CreditCard,
   Home,
+  LayoutGrid,
   MessageSquare,
-  Shield
+  Settings,
+  Shield,
+  ShoppingCart
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -25,11 +28,16 @@ const nav: NavItem[] = [
     label: "Overview",
     icon: <Home className="w-5 h-5" />,
   },
-  // {
-  //   href: "/user-dashboard/pages",
-  //   label: "Pages",
-  //   icon: <LayoutGrid className="w-5 h-5" />,
-  // },
+  {
+    href: "/user-dashboard/pages",
+    label: "Pages",
+    icon: <LayoutGrid className="w-5 h-5" />,
+  },
+  {
+    href: "/user-dashboard/order",
+    label: "Order",
+    icon: <ShoppingCart className="w-5 h-5" />,
+  },
   {
     href: "/user-dashboard/token-usage",
     label: "Token Usage",
@@ -40,11 +48,11 @@ const nav: NavItem[] = [
     label: "Billing",
     icon: <CreditCard className="w-5 h-5" />,
   },
-  // {
-  //   href: "/user-dashboard/configure-bot",
-  //   label: "Configuration Bot",
-  //   icon: <Settings className="w-5 h-5" />,
-  // },
+  {
+    href: "/user-dashboard/configure-bot",
+    label: "Configuration Bot",
+    icon: <Settings className="w-5 h-5" />,
+  },
   {
     href: "/user-dashboard/update-pageInfo",
     label: "Update PageInfo",

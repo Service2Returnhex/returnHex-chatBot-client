@@ -21,8 +21,8 @@ export default function layout({
 
   useEffect(() => {
     // simulate fetch + small delay
-    const token = localStorage.getItem("accessToken");
-    if (!token) return;
+    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+     if (!token) return;
     if (!token) {
       router.replace("/login");
     }
@@ -84,7 +84,6 @@ export default function layout({
               </div>
             </div>
           )}
-
           {/* <UserSidebar /> */}
         </div>
         <div className="w-full ml-4 mt-4">{children}</div>

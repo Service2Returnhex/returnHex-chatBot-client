@@ -4,7 +4,9 @@ interface PageProps {
     params: { id: string };
 }
 
-export default function TokenUsage({ params }: PageProps) {
+export default async function TokenUsage({ params }: any) {
+    // const resolvedParams = await params;
+    // const id = resolvedParams.id;
     return (
         <>
             <TokenUsagePage

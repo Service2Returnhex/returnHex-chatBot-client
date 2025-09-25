@@ -17,11 +17,12 @@ interface ShopInfo {
     accessToken: string;
     moreInfo: string;
 }
-type Props = {
-    id: string;
-};
+interface PageProps {
+    id: string
+}
 
-export default function UpdatePageInfo({ id }: { id: string }) {
+export default function UpdatePageInfo({ id }: PageProps) {
+    console.log("params update", id);
     const router = useRouter();
     const [formData, setFormData] = useState<ShopInfo>({
         shopId: "",
@@ -80,7 +81,8 @@ export default function UpdatePageInfo({ id }: { id: string }) {
     };
 
     useEffect(() => {
-        const savedPageId = localStorage.getItem("pageId");
+        const savedPageId = typeof window !== "undefined"
+            ? localStorage.getItem("pageId") : null;
         if (!id) return;
         if (savedPageId) {
             setFormData((prev) => ({

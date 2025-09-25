@@ -40,7 +40,8 @@ export default function UpdatePageInfo() {
       toast.error("Please enter a valid Page ID");
       return;
     }
-    localStorage.setItem("pageId", id);
+    typeof window !== "undefined"
+      ? localStorage.setItem("pageId", id) : null;
     setIsLoadingData(true);
     try {
       const res = await axios.get<{ success: boolean; data: ShopInfo }>(
@@ -77,7 +78,8 @@ export default function UpdatePageInfo() {
   };
 
   useEffect(() => {
-    const savedPageId = localStorage.getItem("pageId");
+    const savedPageId = typeof window !== "undefined"
+      ? localStorage.getItem("pageId") : null;
 
     if (savedPageId) {
       setFormData((prev) => ({

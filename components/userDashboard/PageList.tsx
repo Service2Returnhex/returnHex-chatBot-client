@@ -4,6 +4,7 @@ import { IPageInfo } from "@/types/pageInfo.type";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Clipboard } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import PageActions from "./PageActions";
@@ -12,6 +13,7 @@ export default function PagesList() {
   const [pages, setPages] = useState<IPageInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -26,7 +28,8 @@ export default function PagesList() {
 
   const togglePage = async (pageId: string) => {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = typeof window !== "undefined"
+        ? localStorage.getItem("accessToken") : null;
       await axios.patch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/${pageId}/toggle-status`,
         {},
@@ -51,7 +54,8 @@ export default function PagesList() {
     async function loadByOwner() {
       setLoading(true);
       try {
-        const token = localStorage.getItem("accessToken");
+        const token = typeof window !== "undefined"
+          ? localStorage.getItem("accessToken") : null;
         if (!token) {
           toast.error("Please login first");
           return;
@@ -66,7 +70,7 @@ export default function PagesList() {
         }
 
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/shop/`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/shop/owner/${ownerId}`,
           {
             headers: {
               Authorization: `${token}`,
@@ -74,7 +78,7 @@ export default function PagesList() {
             }
           }
         );
-
+        console.log("response", res);
         if (!res.data.success) {
           toast.error(res.data.message || "Failed to load pages");
           return;
@@ -83,6 +87,7 @@ export default function PagesList() {
         if (mounted) {
           setPages(res.data.data as IPageInfo[]);
         }
+        console.log("page null", pages);
       } catch (err: any) {
         console.error("loadByOwner error:", err);
         toast.error(err?.response?.data?.message || err?.message || "Could not load pages");
@@ -203,8 +208,15 @@ export default function PagesList() {
                     <td className="p-3 align-top relative cursor-pointer items-center flex justify-center">
                       <PageActions
                         page={page}
-                        onEdit={(p) => console.log("Edit:", p)}
-                        onView={(p) => console.log("View:", p)}
+                        onEdit={(p) => {
+                          // parent decides what to do (e.g. log + navigate)
+                          console.log("Edit:", p);
+                          router.push(`/user-dashboard/update-pageInfo/${p.shopId}`);
+                        }}
+                        onView={(p) => {
+                          console.log("View:", p);
+                          router.push(`/user-dashboard/pages/${p.shopId}`);
+                        }}
                       />
                     </td>
                   </tr>
@@ -281,8 +293,15 @@ export default function PagesList() {
                 <div className="flex-shrink-0 ml-2">
                   <PageActions
                     page={page}
-                    onEdit={(p) => console.log("Edit:", p)}
-                    onView={(p) => console.log("View:", p)}
+                    onEdit={(p) => {
+                      // parent decides what to do (e.g. log + navigate)
+                      console.log("Edit:", p);
+                      router.push(`/user-dashboard/update-pageInfo/${p.shopId}`);
+                    }}
+                    onView={(p) => {
+                      console.log("View:", p);
+                      router.push(`/user-dashboard/pages/${p.shopId}`);
+                    }}
                   />
                 </div>
               </div>

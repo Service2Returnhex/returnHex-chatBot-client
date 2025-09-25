@@ -7,7 +7,7 @@ type Props = {
   monthlyLimit?: number | null;
 };
 
-export default function TokenCard({ available, totalUsed, monthlyLimit,used }: Props) {
+export default function TokenCard({ available, totalUsed, monthlyLimit, used }: Props) {
   const usedPct = monthlyLimit
     ? Math.round((totalUsed / monthlyLimit) * 100)
     : undefined;
@@ -24,22 +24,22 @@ export default function TokenCard({ available, totalUsed, monthlyLimit,used }: P
           <div className="text-xs text-gray-400 mt-1">Available Message</div>
         </div>
 
-<div>
+        <div>
 
-        <div className="text-right">
-          <div className="text-lg font-medium text-gray-200">
-            {totalUsed.toLocaleString()}
+          <div className="text-right">
+            <div className="text-lg font-medium text-gray-200">
+              {totalUsed.toLocaleString()}
+            </div>
+            <div className="text-xs text-gray-400">Total Used Message</div>
           </div>
-          <div className="text-xs text-gray-400">Total Used Message</div>
-        </div>
 
-        <div className="text-right">
-          <div className="text-lg font-medium text-gray-200">
-            {used.toLocaleString()}
+          <div className="text-right">
+            <div className="text-lg font-medium text-gray-200">
+              {used.toLocaleString()}
+            </div>
+            <div className="text-xs text-gray-400">Used this period</div>
           </div>
-          <div className="text-xs text-gray-400">Used this period</div>
         </div>
-</div>
       </div>
 
       {monthlyLimit ? (
