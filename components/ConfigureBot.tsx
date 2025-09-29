@@ -19,7 +19,7 @@ export default function ChatbotUserSetupPage() {
     verifyToken: "",
     accessToken: "",
     moreInfo: "",
-  });
+  }); 
 
   const [webhookURL, setWebhookURL] = useState("");
   const [verifyWebHook, setVerifyWebHook] = useState(false);
