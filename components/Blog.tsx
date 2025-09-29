@@ -62,7 +62,9 @@ export default function PromptGuide() {
   useEffect(() => {
     if (!pageName) return;
     try {
-      const saved = localStorage.getItem(`ap_system_config_${pageName}`);
+
+      const saved = typeof window !== "undefined"
+        ? localStorage.getItem(`ap_system_config_${pageName}`) : null;
       if (saved) {
         const parsed = JSON.parse(saved);
         setWordLimit(parsed.wordLimit || 100);
@@ -87,6 +89,7 @@ export default function PromptGuide() {
         }
         showToast("কনফিগ লোড করা হয়েছে");
       }
+
     } catch (e) {
       // ignore
     }
@@ -179,10 +182,12 @@ export default function PromptGuide() {
       points: points.map((p) => ({ id: p.id, enabled: p.enabled })),
     };
     try {
-      localStorage.setItem(
-        `ap_system_config_${pageName}`,
-        JSON.stringify(payload)
-      );
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          `ap_system_config_${pageName}`,
+          JSON.stringify(payload)
+        );
+      }
       showToast("কনফিগ সংরক্ষণ করা হয়েছে");
     } catch (e) {
       showToast("সেভ করা যায়নি");

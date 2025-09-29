@@ -37,7 +37,8 @@ type TokenUsageResponse = {
 };
 
 export default function TokenUsagePage(params: any) {
-    const shopId = localStorage.getItem("pageId")
+    const shopId = typeof window !== "undefined"
+        ? localStorage.getItem("pageId") : null
     console.log("params", params.id);
     // console.log("shop id",shopId);
     const { tData, tLoading, tError, refetch } = useMsgCounts(params.id);

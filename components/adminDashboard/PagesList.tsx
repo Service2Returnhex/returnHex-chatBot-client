@@ -4,14 +4,16 @@ import { IPageInfo } from "@/types/pageInfo.type";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Clipboard } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import PageActions from "../ui/PageActions";
+import PageActions from "./PageActions";
 
 export default function PagesList() {
   const [pages, setPages] = useState<IPageInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -26,7 +28,8 @@ export default function PagesList() {
 
   const togglePage = async (pageId: string) => {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = typeof window !== "undefined"
+        ? localStorage.getItem("accessToken") : null;
       await axios.patch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/${pageId}/toggle-status`,
         {},
@@ -43,15 +46,17 @@ export default function PagesList() {
       console.error("Failed to toggle status", err);
     }
   }
-
+  // console.log("page null", pages);
 
 
   useEffect(() => {
     let mounted = true;
+    console.log("page");
     async function loadByOwner() {
       setLoading(true);
       try {
-        const token = localStorage.getItem("accessToken");
+        const token = typeof window !== "undefined"
+          ? localStorage.getItem("accessToken") : null;
         if (!token) {
           toast.error("Please login first");
           return;
@@ -66,7 +71,7 @@ export default function PagesList() {
         }
 
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/shop/`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/shop/owner/${ownerId}`,
           {
             headers: {
               Authorization: `${token}`,
@@ -83,6 +88,7 @@ export default function PagesList() {
         if (mounted) {
           setPages(res.data.data as IPageInfo[]);
         }
+
       } catch (err: any) {
         console.error("loadByOwner error:", err);
         toast.error(err?.response?.data?.message || err?.message || "Could not load pages");
@@ -94,7 +100,8 @@ export default function PagesList() {
     loadByOwner();
     return () => { mounted = false; };
   }, []);
-  console.log("page", pages);
+  console.log("page null", pages);
+
 
   if (loading) return <div>Loading...</div>;
   if (!pages || pages.length === 0) return <div>No pages found for this owner.</div>;
@@ -203,8 +210,14 @@ export default function PagesList() {
                     <td className="p-3 align-top relative cursor-pointer items-center flex justify-center">
                       <PageActions
                         page={page}
-                        onEdit={(p) => console.log("Edit:", p)}
-                        onView={(p) => console.log("View:", p)}
+                        onEdit={(p) => {
+                          console.log("Edit:", p);
+                          router.push(`/admin-dashboard/update-pageInfo`);
+                        }}
+                        onView={(p) => {
+                          console.log("View:", p);
+                          router.push(`/admin-dashboard/pages/${p.shopId}`);
+                        }}
                       />
                     </td>
                   </tr>

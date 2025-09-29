@@ -14,7 +14,8 @@ const TrainPrompt = () => {
   const [dmEdit, setDmEdit] = useState(false);
   const [cmtEdit, setCmtEdit] = useState(false);
   useEffect(() => {
-    const savedPageId = localStorage.getItem("pageId");
+    const savedPageId = typeof window !== "undefined"
+      ? localStorage.getItem("pageId") : null;
     if (!savedPageId) {
       toast.error("No Page ID found. Please configure your page first.");
       return;

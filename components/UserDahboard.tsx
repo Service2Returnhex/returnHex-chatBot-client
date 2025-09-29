@@ -1,3 +1,4 @@
+"use client"
 import { Bot, Brain, MessageSquare, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 

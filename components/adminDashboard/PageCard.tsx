@@ -18,7 +18,8 @@ export default function PageCard() {
     async function loadByOwner() {
       setLoading(true);
       try {
-        const token = localStorage.getItem("accessToken");
+        const token = typeof window !== "undefined"
+          ? localStorage.getItem("accessToken") : null;
         if (!token) {
           toast.error("Please login first");
           return;

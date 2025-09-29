@@ -30,9 +30,8 @@ export default function ChatbotUserSetupPage() {
 
    const handleProvideInfo = async () => {
     setIsLoading(true);
-        const token = localStorage.getItem("accessToken");
-
-   let ownerId: string | null = null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    let ownerId: string | null = null;
     if (token) {
       const decoded = jwtDecode<JwtPayload>(token);
       ownerId = decoded.userId ?? decoded._id ?? decoded.id ?? null;
@@ -45,15 +44,19 @@ export default function ChatbotUserSetupPage() {
         {
           ...formData,
           shopId: formData.pageId,
-          ownerId:ownerId ?? undefined
+          ownerId: ownerId ?? undefined
         }
       );
       const generatedURL = `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/meta-webhook/${formData.pageId}/webhook`;
-      localStorage.setItem("webHookURL", generatedURL);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("webHookURL", generatedURL);
+      }
       setWebhookURL(generatedURL);
 
       toast.success("Webhook URL and Verify Token generated successfully.");
-      localStorage.setItem("pageId", formData.pageId);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("pageId", formData.pageId);
+      }
     } catch (err: any) {
       toast.error(err?.response?.data?.message || err.message);
     } finally {
@@ -62,8 +65,12 @@ export default function ChatbotUserSetupPage() {
   };
 
   useEffect(() => {
-    const pageId = localStorage.getItem("pageId");
-    const generatedURL = localStorage.getItem("webHookURL");
+
+    const pageId = typeof window !== "undefined"
+      ? localStorage.getItem("pageId") : null;
+    const generatedURL = typeof window !== "undefined"
+      ? localStorage.getItem("webHookURL") : null;
+
     setWebhookURL(generatedURL || "");
     console.log("pageid", pageId);
 

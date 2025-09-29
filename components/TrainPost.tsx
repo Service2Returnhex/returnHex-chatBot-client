@@ -20,7 +20,8 @@ export default function TrainPost() {
 
   const [isTrained, setIsTraind] = useState(false);
   useEffect(() => {
-    const savedPageId = localStorage.getItem("pageId");
+    const savedPageId = typeof window !== "undefined"
+      ? localStorage.getItem("pageId") : null;
     if (!savedPageId) return;
     axios
       .get(
@@ -42,17 +43,27 @@ export default function TrainPost() {
         console.log(err);
       });
   }, []);
+  const fields = [
+    "message",
+    // request attachments and subattachments with description/title/media
+    "attachments{media_type,media,description,title,subattachments{media,description,title,target}}",
+  ].join(",");
 
   const fetchPosts = async () => {
     if (!pageId || !accessToken) return;
     setLoading(true);
+
+
+    // const url = `https://graph.facebook.com/v19.0/${pageId}/posts`;
+    // const response = await axios.get(url, {
+    //   params: { fields, access_token: accessToken },
+    //   timeout: 10000,
+    // });
     try {
       const response = await axios.get(
         `https://graph.facebook.com/v19.0/${pageId}/posts?access_token=${accessToken}`,
         {
-          params: {
-            fields: "id,message,created_time,full_picture",
-          },
+          params: { fields, },
         }
       );
       const res1 = await axios.get(
@@ -63,10 +74,13 @@ export default function TrainPost() {
           },
         }
       );
+      console.log("response", response);
       setPosts(response.data.data);
       setTrainedPosts(res1.data.data);
+
       toast.success("Post Retrieved!");
-      localStorage.setItem("pageId", pageId);
+      typeof window !== "undefined"
+        ? localStorage.setItem("pageId", pageId) : null;
     } catch (error) {
       console.error("Failed to fetch posts", error);
       toast.error(
@@ -76,22 +90,71 @@ export default function TrainPost() {
       setLoading(false);
     }
   };
+  console.log("all post", posts);
 
   const handleTrainPosts = async (post: TPost) => {
     try {
       setTrainLoading(post.id);
+      console.log("post image", post);
+
+      // Build images[] from common shapes. Adapt to your post shape.
+      const images: Array<{ url: string; caption?: string; embedding?: number[]; phash?: string }> = [];
+
+      // Example: attachments array with media.image.src
+      if (Array.isArray((post as any).attachments) && (post as any).attachments.length > 0) {
+        for (const att of (post as any).attachments) {
+          const url =
+            (att.media && att.media.image && att.media.image.src) ||
+            att.media?.image?.uri ||
+            att.url ||
+            att.src ||
+            att.image ||
+            "";
+          if (!url) continue;
+          const caption = att.title ?? att.caption ?? att.alt_text ?? post.message ?? "";
+          images.push({ url: String(url), caption: String(caption) });
+        }
+      }
+
+      // Example: if post.images array exists
+      if (images.length === 0 && Array.isArray((post as any).images) && (post as any).images.length > 0) {
+        for (const img of (post as any).images) {
+          const url = img.url ?? img.src ?? "";
+          if (!url) continue;
+          images.push({ url: String(url), caption: img.caption ?? post.message ?? "" });
+        }
+      }
+
+      // Fallback to full_picture single-image
+      if (images.length === 0 && post.full_picture) {
+        images.push({ url: String(post.full_picture), caption: post.message ?? "" });
+      }
+
+      // FINAL payload: include shopId/postId + the raw post + normalized images
+      const payload = {
+        shopId: pageId,
+        postId: post.id,
+        message: post.message ?? "",
+        summarizedMsg: post.summarizedMsg ?? "",
+        aggregatedEmbedding: post.aggregatedEmbedding ?? [],
+        full_picture: post.full_picture ?? (images[0]?.url ?? ""),
+        createdAt: post.created_time ?? new Date().toISOString(),
+        images,        // normalized array for backend enricher
+        rawPost: post, // full original post for debug / extra fields
+      };
+
+      console.debug("train payload", payload);
+
       const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/product`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/product`, payload.rawPost,
         {
-          shopId: pageId,
-          postId: post.id,
-          message: post.message,
-          aggregatedEmbedding: post.aggregatedEmbedding,
-          full_picture: post.full_picture,
-          createdAt: post.created_time,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          timeout: 60_000,
         }
       );
-      // console.log("data", data);
+      console.log("data", data);
       if (data.success) {
         toast.success("Post Trained");
         await fetchPosts();

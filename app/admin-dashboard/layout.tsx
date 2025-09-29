@@ -19,7 +19,7 @@ export default function layout({
 
   useEffect(() => {
     // simulate fetch + small delay
-    const token = localStorage.getItem("accessToken");
+    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
     if (!token) return;
 
     const decoded = jwtDecode<JwtPayload>(token);
