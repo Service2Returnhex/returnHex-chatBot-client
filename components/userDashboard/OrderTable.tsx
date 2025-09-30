@@ -2,7 +2,9 @@
 // "use client";
 
 import { IOrder, OrderStatus } from "@/types/order.type";
+import axios from "axios";
 import { Clipboard, Edit3, Eye } from "lucide-react"; // replace with your icon set
+import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
 
@@ -21,10 +23,8 @@ const statusClasses = (status: OrderStatus) => {
     switch (status) {
         case "pending":
             return "bg-yellow-600 text-black";
-        case "processing":
+        case "confirmed":
             return "bg-blue-600 text-white";
-        case "shipped":
-            return "bg-indigo-600 text-white";
         case "delivered":
             return "bg-green-600 text-white";
         case "cancelled":
@@ -34,16 +34,59 @@ const statusClasses = (status: OrderStatus) => {
     }
 };
 
+
 /* ---------------- OrdersTable Component ---------------- */
 type Props = {
     orders: IOrder[];
+    setOrders: Dispatch<SetStateAction<IOrder[]>>;
     loading?: boolean;
     onView?: (order: IOrder) => void;
     onEdit?: (order: IOrder) => void;
-    onToggleStatus?: (orderId: string) => void; // e.g. cycle statuses
+    onToggleStatus?: (orderId: string) => void;
+    fetchOrders?: () => Promise<void>;
 };
 
-export default function OrdersTable({ orders, loading }: Props) {
+export default function OrdersTable({ orders, setOrders, loading, onView, onEdit, onToggleStatus, fetchOrders, }: Props) {
+
+    const [mutatingId, setMutatingId] = useState<string | null>(null);
+    const STATUS_OPTIONS: OrderStatus[] = ["pending", "confirmed", "delivered", "cancelled"];
+
+    const handleChangeStatus = useCallback(
+        async (orderId: string, newStatus: OrderStatus) => {
+            if (mutatingId === orderId) return;
+            let previousSnapshot: IOrder[] = [];
+            setOrders((prev) => {
+                previousSnapshot = prev;
+                return prev.map((o) => (o._id === orderId ? { ...o, status: newStatus } : o));
+            });
+
+            setMutatingId(orderId);
+            try {
+                const token = localStorage.getItem("accessToken");
+                if (!token) throw new Error("Auth token not found");
+
+                await axios.patch(
+                    `${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/v1/page/shop/order/${encodeURIComponent(orderId)}`,
+                    { status: newStatus },
+                    { headers: { Authorization: `${token}` }, timeout: 10_000 }
+                );
+
+                toast.success("Status updated");
+            } catch (err: any) {
+                console.error(err);
+                // rollback
+                setOrders(previousSnapshot);
+                if (fetchOrders) await fetchOrders().catch(() => { });
+                toast.error(err?.response?.data?.message ?? err?.message ?? "Could not update status");
+            } finally {
+                setMutatingId(null);
+            }
+        },
+        [mutatingId, setOrders, fetchOrders]
+    );
+
+
+
     return (
         <div className="p-2">
             <div className="card-bg p-5 rounded-lg shadow border border-gray-700">
@@ -79,7 +122,7 @@ export default function OrdersTable({ orders, loading }: Props) {
                                             <div className=" max-w-[350px]">
                                                 <div className="flex items-center gap-2">
                                                     <div className="flex flex-col ">
-                                                        <div className="text-xs text-gray-400">Shop Id</div>
+                                                        <div className="text-xs text-gray-400">Order Id</div>
                                                         <div className="truncate max-w-[200px]">{o._id}</div>
                                                     </div>
                                                     <button
@@ -137,14 +180,27 @@ export default function OrdersTable({ orders, loading }: Props) {
 
                                         {/* Status */}
                                         <td className="p-3 align-top">
-                                            <button
+                                            {/* <button
                                                 // onClick={() => onToggleStatus?.(o.orderId)}
                                                 className={`inline-flex items-center gap-2 px-2 py-1 text-xs font-medium rounded-full ${statusClasses(o.status)}`}
                                                 aria-label={`Order status: ${o.status}`}
                                                 title="Click to toggle status"
                                             >
                                                 {o.status}
-                                            </button>
+                                            </button> */}
+                                            <select
+                                                value={o.status}
+                                                onChange={(e) => handleChangeStatus(o._id ?? "", e.target.value as OrderStatus)}
+                                                disabled={mutatingId === o._id}
+                                                className={`inline-flex items-center gap-2 px-1 py-1 text-xs font-medium rounded-full ${statusClasses(o.status)}`}
+                                            >
+                                                {STATUS_OPTIONS.map((s) => (
+                                                    <option key={s} value={s} className="custom-card-bg text-white">
+                                                        {s}
+                                                    </option>
+                                                ))}
+                                            </select>
+
                                         </td>
 
                                         {/* Actions */}

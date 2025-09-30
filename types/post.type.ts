@@ -1,6 +1,6 @@
 
-export type IImageItem={
-   url: string;
+export type IImageItem = {
+  url: string;
   // photoId?: number;
   caption?: string;
   embedding?: number[]; // embedding for this image
@@ -10,10 +10,9 @@ export type TPost = {
   id: string;
   message: string;
   full_picture: string;
-  summarizedMsg:string;
+  summarizedMsg: string;
   images?: IImageItem[];
-  aggregatedEmbedding?:number[];
-  isTrained:boolean;
+  aggregatedEmbedding?: number[];
+  isTrained: boolean;
   created_time: Date;
 };
-  

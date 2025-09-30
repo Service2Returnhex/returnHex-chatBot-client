@@ -19,6 +19,7 @@ export default function TrainPost() {
   const [notTrainLoading, setNotTrainLoading] = useState<string | null>(null);
 
   const [isTrained, setIsTraind] = useState(false);
+
   useEffect(() => {
     const savedPageId = typeof window !== "undefined"
       ? localStorage.getItem("pageId") : null;
@@ -46,7 +47,7 @@ export default function TrainPost() {
   const fields = [
     "message",
     // request attachments and subattachments with description/title/media
-    "attachments{media_type,media,description,title,subattachments{media,description,title,target}}",
+    "created_time", "attachments{media_type,media,description,title,subattachments{media,description,title,target}}",
   ].join(",");
 
   const fetchPosts = async () => {
@@ -74,7 +75,8 @@ export default function TrainPost() {
           },
         }
       );
-      console.log("response", response);
+      console.log("response", response.data.data);
+      console.log("res1", res1);
       setPosts(response.data.data);
       setTrainedPosts(res1.data.data);
 
@@ -139,14 +141,14 @@ export default function TrainPost() {
         aggregatedEmbedding: post.aggregatedEmbedding ?? [],
         full_picture: post.full_picture ?? (images[0]?.url ?? ""),
         createdAt: post.created_time ?? new Date().toISOString(),
-        images,        // normalized array for backend enricher
-        rawPost: post, // full original post for debug / extra fields
+        images,
+        rawPost: post,
       };
 
       console.debug("train payload", payload);
 
       const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/product`, payload.rawPost,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/product`, payload,
         {
           headers: {
             "Content-Type": "application/json",

@@ -34,7 +34,7 @@ export default function LogoutButton() {
                 {}, // no body
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `${token}`,
                     },
                     withCredentials: true, // if your API uses cookies
                     timeout: 10_000,

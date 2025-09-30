@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "ibb.co.com",
       },
+      {
+        protocol: 'https',
+        hostname: '**.fbcdn.net',   // allow any subdomain of fbcdn.net
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

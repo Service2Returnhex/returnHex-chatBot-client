@@ -9,6 +9,7 @@ import {
   Package,
   Settings,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useMemo } from "react";
@@ -145,38 +146,17 @@ export default function AdminSidebar({
             </Link>
           );
         })}
+        <Link href={"/"} className="bottom-2 fixed flex gap-4 justify-center items-center">
+          <Image
+            src="/botHex3.jpg"
+            height={36}
+            width={36}
+            alt="home"
+            className="rounded"
+          />
+          <span>Home</span>
+        </Link>
       </nav>
-
-      {/* Spacer */}
-      {/* <div className="flex-1 mt-6" />
-
-      <div className="mt-6 border-t border-white/5 pt-4 w-full absolute bottom-5">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-xs text-gray-300">Available</div>
-            <div className="text-lg font-semibold text-white">
-              {availableTokens.toLocaleString()}
-            </div>
-          </div>
-
-          <div className="flex flex-col items-end gap-2">
-            <Link
-              href="/dashboard/user/usage"
-              className="text-xs px-3 py-1 bg-white/5 rounded-md hover:bg-indigo-600 hover:text-white transition"
-            >
-              View Usage
-            </Link>
-            <button
-              type="button"
-              onClick={() => onSignOut?.()}
-              className="text-xs px-3 py-1 rounded-md hover:bg-white/5 transition flex items-center gap-2 text-gray-200"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign out
-            </button>
-          </div>
-        </div>
-      </div> */}
     </aside>
   );
 }

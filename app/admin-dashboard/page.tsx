@@ -1,6 +1,7 @@
 import PageCard from "@/components/adminDashboard/PageCard";
 import PagesList from "@/components/adminDashboard/PagesList";
 import TokenChart from "@/components/adminDashboard/TokenCharts";
+import LogoutButton from "@/components/ui/LogOutButton";
 import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 
 
@@ -28,7 +29,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         {/* Left: title + subtitle */}
-        <div className="min-w-0">
+        <div className="min-w-0 ">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white flex items-center gap-3 leading-tight truncate">
             <span className="flex items-center gap-2 min-w-0">
               <span className="truncate">Admin Dashboard </span>
@@ -42,7 +43,7 @@ export default function DashboardPage() {
           </p>
 
           {/* On very small devices show status below title (keeps layout compact) */}
-          <div className="mt-3 md:hidden">
+          <div className="mt-3 md:hidden flex flex-col gap-2 w-30">
             <span
               role="status"
               aria-live="polite"
@@ -50,21 +51,29 @@ export default function DashboardPage() {
             >
               System Online
             </span>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              {/* On small screens make button full width (stacked under text) */}
+              <LogoutButton />
+            </div>
           </div>
         </div>
 
         {/* Right: status (md+) and optional actions */}
         <div className="flex items-center gap-3 w-full md:w-auto">
           {/* status visible on md+ */}
-          <div className="hidden md:block">
+          <div className="hidden  md:flex md:flex-col gap-2">
             <span
               role="status"
               aria-live="polite"
-              className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${statusClasses}`}
+              className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${statusClasses}`}
             >
               {status === "online" ? <FiCheckCircle className="mr-2" /> : <FiAlertCircle className="mr-2" />}
               {status === "online" ? "System Online" : status === "degraded" ? "Degraded" : "Offline"}
             </span>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              {/* On small screens make button full width (stacked under text) */}
+              <LogoutButton />
+            </div>
           </div>
 
           {/* {actions ? <div className="w-full md:w-auto">{actions}</div> : null} */}

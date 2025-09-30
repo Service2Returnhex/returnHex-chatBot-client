@@ -106,7 +106,7 @@ export default function TokenUsagePage(params: any) {
 
   return (
     <div className="p-6">
-      <header className="flex items-center justify-between mb-6">
+      <header className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Message Usage</h1>
 
         <div className="flex items-center gap-2">

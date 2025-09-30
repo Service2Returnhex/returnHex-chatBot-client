@@ -7,40 +7,36 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-export const mockOrders: IOrder[] = [
-    {
-        _id: "1",
-        userId: "sender123",
-        shopId: "714401141759522",
-        orderId: "ORD-0001",
-        customerName: "John Doe",
-        productName: "JBL Headphone",
-        quantity: 1,
-        address: "123 Main St, Dhaka",
-        contact: "+8801612345678",
-        paymentMethod: "Cash on Delivery",
-        status: "pending",
-        createdAt: new Date().toISOString(),
-    },
-    {
-        _id: "2",
-        userId: "sender456",
-        shopId: "714401141759522",
-        orderId: "ORD-0002",
-        customerName: "Jane Smith",
-        productName: "Bluetooth Speaker",
-        quantity: 2,
-        address: "45 Lakeview Rd, Sylhet",
-        contact: "+8801712345678",
-        paymentMethod: "Bkash",
-        status: "processing",
-        createdAt: new Date().toISOString(),
-    },
-];
-
-
-
-
+// export const mockOrders: IOrder[] = [
+//     {
+//         _id: "1",
+//         userId: "sender123",
+//         shopId: "714401141759522",
+//         orderId: "ORD-0001",
+//         customerName: "John Doe",
+//         productName: "JBL Headphone",
+//         quantity: 1,
+//         address: "123 Main St, Dhaka",
+//         contact: "+8801612345678",
+//         paymentMethod: "Cash on Delivery",
+//         status: "pending",
+//         createdAt: new Date().toISOString(),
+//     },
+//     {
+//         _id: "2",
+//         userId: "sender456",
+//         shopId: "714401141759522",
+//         orderId: "ORD-0002",
+//         customerName: "Jane Smith",
+//         productName: "Bluetooth Speaker",
+//         quantity: 2,
+//         address: "45 Lakeview Rd, Sylhet",
+//         contact: "+8801712345678",
+//         paymentMethod: "Bkash",
+//         status: "processing",
+//         createdAt: new Date().toISOString(),
+//     },
+// ];
 
 
 export default function Orders() {
@@ -161,11 +157,12 @@ export default function Orders() {
     return (
         <div>
             <OrdersTable
-                orders={orders}               // <--- required
+                orders={orders}
+                setOrders={setOrders}
                 loading={false}
-            // onView={(o) => console.log("view", o)}
-            // onEdit={(o) => console.log("edit", o)}
-            // onToggleStatus={(id) => console.log("toggle", id)}
+                onView={(o) => console.log("view", o)}
+                onEdit={(o) => console.log("edit", o)}
+                onToggleStatus={(id) => console.log("toggle", id)}
             />
         </div>
     );
