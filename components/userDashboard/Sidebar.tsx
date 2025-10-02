@@ -157,7 +157,7 @@ export default function UserSidebar({
         })}
         <Link href={"/"} className="bottom-6 fixed flex gap-4 justify-center items-center">
           <Image
-            src="/botHex3.jpg"
+            src="/autoPingLogo-removebg-preview.png"
             height={36}
             width={36}
             alt="home"

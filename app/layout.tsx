@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hex Chat Bot",
-  description: "Manage Your social paltform with AI",
+  title: "AutoPing Ai",
+  description: "Manage Your social paltform with AI, Your AI Assistant AutoPing",
   icons: {
-    icon: "botHex3.jpg"
+    icon: "autoPingLogo-removebg-preview.png"
   },
 };
 
