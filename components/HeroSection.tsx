@@ -46,11 +46,10 @@ const CTAButton: React.FC<
   return (
     <Link
       href={href}
-      className={`inline-flex z-5 items-center gap-3 rounded-2xl px-6 py-3 font-medium transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer ${
-        variant === "primary"
-          ? "bg-indigo-600 text-white shadow-md hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0.5 "
-          : "bg-white/10 text-white hover:bg-white/20"
-      }`}
+      className={`inline-flex z-5 items-center gap-3 rounded-2xl px-6 py-3 font-medium transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer ${variant === "primary"
+        ? "bg-indigo-600 text-white shadow-md hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0.5 "
+        : "bg-white/10 text-white hover:bg-white/20"
+        }`}
       aria-label={`${children}`}
     >
       {children}
@@ -67,6 +66,8 @@ export default function HeroSection({ title, subtitle }: Props) {
   ]);
   const [input, setInput] = useState("");
 
+  const token = typeof window !== "undefined"
+    ? localStorage.getItem("accessToken") : null;
   const handleSend = () => {
     if (!input.trim()) return;
 
@@ -114,7 +115,7 @@ export default function HeroSection({ title, subtitle }: Props) {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4 items-center">
-              <CTAButton href="/configure-bot" variant="primary">
+              <CTAButton href={token ? "/user-dashboard/configure-bot" : "/login"} variant="primary">
                 Configure Bot
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +132,7 @@ export default function HeroSection({ title, subtitle }: Props) {
                 </svg>
               </CTAButton>
 
-              <CTAButton href="/train-bot" variant="ghost">
+              <CTAButton href="/" variant="ghost">
                 Try Demo
               </CTAButton>
             </div>
@@ -198,16 +199,14 @@ export default function HeroSection({ title, subtitle }: Props) {
                 {messages.map((msg, idx) => (
                   <div
                     key={idx}
-                    className={`flex ${
-                      msg.sender === "user" ? "justify-end" : "justify-start"
-                    }`}
+                    className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"
+                      }`}
                   >
                     <div
-                      className={`py-2 rounded-2xl  min-w-[80%] text-sm ${
-                        msg.sender === "user"
-                          ? "ml-auto max-w-xs  bg-indigo-600/95 px-4 py-3 text-sm text-white shadow"
-                          : "max-w-[85%]bg-white/8 px-4 py-3 text-sm text-gray-200"
-                      }`}
+                      className={`py-2 rounded-2xl  min-w-[80%] text-sm ${msg.sender === "user"
+                        ? "ml-auto max-w-xs  bg-indigo-600/95 px-4 py-3 text-sm text-white shadow"
+                        : "max-w-[85%]bg-white/8 px-4 py-3 text-sm text-gray-200"
+                        }`}
                     >
                       {msg.text}
                     </div>

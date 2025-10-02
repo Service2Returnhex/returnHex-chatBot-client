@@ -19,7 +19,7 @@ export default function PagesList() {
     try {
       await navigator.clipboard.writeText(text);
       // replace with toast if you use one
-      // toast.success("Copied token");
+      toast.success("Copied to clipboard!");
       console.log("copied");
     } catch (err) {
       console.error("copy failed", err);
@@ -111,18 +111,18 @@ export default function PagesList() {
         {/* Desktop / tablet: table (md+) */}
         <div className="hidden md:block">
           {/* overflow wrapper — allows horizontal scroll without breaking layout */}
-          <div className="overflow-x-auto -mx-5 pl-5">
+          <div className="overflow-x-auto -mx-5 px-5">
             {/* Make table use fixed layout so truncation works predictably */}
             <table className="w-full table-fixed text-left border-collapse min-w-full">
               <thead>
                 <tr className="border-b border-gray-700">
-                  <th className="p-3 text-sm font-medium text-gray-300 w-2/9">Page Name</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-2/9">Page ID</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-2/9">Owner Id</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-2/9">Access Token</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-1/9">Created</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-[90px]">Status</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-[80px]">Actions</th>
+                  <th className="p-3 text-sm font-medium text-gray-300 w-[15%]">Page Name</th>
+                  <th className="p-3 text-sm font-medium text-gray-300 w-[20%]">Page ID / Owner ID</th>
+                  {/* <th className="p-3 text-sm font-medium text-gray-300 w-2/9">Owner Id</th> */}
+                  <th className="p-3 text-sm font-medium text-gray-300 w-[40%]">Access Token / Created </th>
+                  {/* <th className="p-3 text-sm font-medium text-gray-300 w-[10%]">Created</th> */}
+                  <th className="p-3 text-sm font-medium text-gray-300 w-[10%]">Status</th>
+                  <th className="p-3 text-sm font-medium text-gray-300 w-[10%]">Actions</th>
                 </tr>
               </thead>
 
@@ -139,20 +139,73 @@ export default function PagesList() {
                     </td>
 
                     <td className="p-3 align-top text-sm text-gray-300">
-                      <div className="flex items-center gap-1">
-                        <div className="truncate max-w-[160px]">{page.shopId}</div>
+                      <div className="max-w-[120px]">
+                        <div className="flex items-center gap-1">
+                          <div className="flex flex-col ">
+                            <div className="text-xs text-gray-400">Shop Id</div>
+                            <div className="truncate max-w-[220px]">{page.shopId}</div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(page.shopId ?? "")}
+                            className="p-1 rounded text-gray-400 hover:text-white/90 hover:bg-white/5 cursor-pointer"
+                            aria-label="Copy token"
+                          >
+                            <Clipboard className="h-4 w-4" />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="flex flex-col ">
+                            <div className="text-xs text-gray-400">Owner Id</div>
+                            <div className="truncate max-w-[150px]">{page.ownerId}</div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(page?.ownerId ?? "")}
+                            className="p-1 pt-4 rounded text-gray-400 hover:text-white/90 hover:bg-white/5"
+                            aria-label="Copy shop id"
+                          >
+                            <Clipboard className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* <div className=" max-w-[350px]">
+                      <div className="flex items-center gap-2">
+                        <div className="flex flex-col ">
+                          <div className="text-xs text-gray-400">Order Id</div>
+                          <div className="truncate max-w-[200px]">{o._id}</div>
+                        </div>
                         <button
                           type="button"
-                          onClick={() => copyToClipboard(page.shopId ?? "")}
-                          className="p-1 rounded text-gray-400 hover:text-white/90 hover:bg-white/5 cursor-pointer"
-                          aria-label="Copy token"
+                          onClick={() => copyToClipboard(o._id ?? "")}
+                          className="p-1 pt-4 rounded text-gray-400 hover:text-white/90 hover:bg-white/5"
+                          aria-label="Copy order id"
                         >
                           <Clipboard className="h-4 w-4" />
                         </button>
                       </div>
-                    </td>
 
-                    <td className="p-3 align-top text-sm text-gray-300">
+                      <div className="flex items-center gap-2">
+                        <div className="flex flex-col ">
+                          <div className="text-xs text-gray-400">Shop Id</div>
+                          <div className="truncate max-w-[200px]">{o.shopId}</div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(o.shopId)}
+                          className="p-1 pt-4 rounded text-gray-400 hover:text-white/90 hover:bg-white/5"
+                          aria-label="Copy shop id"
+                        >
+                          <Clipboard className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                    </div> */}
+
+                    {/* <td className="p-3 align-top text-sm text-gray-300">
                       <div className="flex items-center gap-3">
                         <span className="truncate max-w-[160px] block break-words">
                           {page?.ownerId}
@@ -166,27 +219,41 @@ export default function PagesList() {
                           <Clipboard className="h-4 w-4" />
                         </button>
                       </div>
-                    </td>
+                    </td> */}
 
                     <td className="p-3 align-top text-sm text-gray-300">
-                      <div className="flex items-center gap-3">
-                        <span className="truncate max-w-[300px] block break-words">
-                          {page.accessToken}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(page.accessToken ?? "")}
-                          className="p-1 rounded text-gray-400 hover:text-white/90 hover:bg-white/5 cursor-pointer"
-                          aria-label="Copy token"
-                        >
-                          <Clipboard className="h-4 w-4" />
-                        </button>
+                      <div className="max-w-[350px]">
+
+
+                        <div className="flex items-center gap-3">
+                          <div className="flex flex-col ">
+                            <div className="text-xs text-gray-400">Acess Token</div>
+                            <span className="truncate  max-w-[300px] block break-words">
+                              {page.accessToken}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(page.accessToken ?? "")}
+                            className="p-1 rounded text-gray-400 hover:text-white/90 hover:bg-white/5 cursor-pointer"
+                            aria-label="Copy token"
+                          >
+                            <Clipboard className="h-4 w-4" />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="flex flex-col ">
+                            <div className="text-xs text-gray-400">createdAt</div>
+                            <div className="truncate max-w-[140px]">{new Date(page.createdAt ?? "").toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka" })}</div>
+                          </div>
+                        </div>
                       </div>
                     </td>
 
-                    <td className="p-3 align-top text-sm text-gray-300">
-                      <div className="truncate max-w-[140px]">{page.createdAt}</div>
-                    </td>
+                    {/* <td className="p-3 align-top text-sm text-gray-300">
+                      <div className="truncate max-w-[140px]">{new Date(page.createdAt ?? "").toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka" })}</div>
+                    </td> */}
 
                     <td className="p-3 align-top cursor-pointer" onClick={() => togglePage(page._id)}>
                       <span
@@ -261,7 +328,14 @@ export default function PagesList() {
 
                   <dl className="mt-3 grid grid-cols-1 gap-2 text-sm text-gray-300">
                     <div>
-                      <dt className="text-xs text-gray-400">Page ID</dt>
+                      <dt className="text-xs text-gray-400 flex items-center justify-between">
+                        <span>Page ID</span>
+                        <button
+                          onClick={() => copyToClipboard(page.shopId ?? "")}
+                          className="text-xs text-gray-300 hover:text-white/90 border border-gray-500 py-1 px-2 rounded-xl cursor-pointer"
+                        >
+                          Copy
+                        </button></dt>
                       <dd className="truncate break-words max-w-full">{page.shopId}</dd>
                     </div>
 

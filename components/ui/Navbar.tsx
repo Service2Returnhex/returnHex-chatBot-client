@@ -50,7 +50,6 @@ export default function Navbar({
     if (userRole == "admin") {
       setRole(userRole)
     }
-
   }, []);
 
   return (

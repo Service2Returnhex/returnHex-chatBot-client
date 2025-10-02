@@ -73,7 +73,7 @@ export default function layout({
     <section>
       {role == "admin" &&
         <div className="bg-radial-aurora text-white min-h-screen flex">
-          <div className="flex fixed top-2 left-2 items-center justify-between mb-6 lg:hidden">
+          <div className="flex fixed top-2 left-2 items-center justify-between mb-6 lg:hidden z-50">
             <button
               onClick={() => setSidebarOpen((s) => !s)}
               className="p-2 rounded-md bg-white/5"

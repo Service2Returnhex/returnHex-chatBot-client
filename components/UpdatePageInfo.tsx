@@ -99,11 +99,10 @@ export default function UpdatePageInfo() {
       )
       .then((res) => {
         const { data } = res;
-        // console.log("data", data);
         if (data.success) {
           setFormData((prev) => ({
             ...prev,
-            shopId: data.shopId,
+            shopId: data.data.shopId,
           }));
         }
       })
@@ -119,14 +118,14 @@ export default function UpdatePageInfo() {
 
   // Update API
   const handleUpdate = async () => {
-    const { shopId, ...rest } = formData;
+    const { ...rest } = formData;
     const payload = Object.fromEntries(
       Object.entries(rest).filter(([, v]) => v !== "")
     );
     setLoading(true);
     try {
       const res = await axios.patch<{ success: boolean }>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/shop/${shopId}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/shop/${formData?.shopId}`,
         payload
       );
       if (res.data.success) {
@@ -154,7 +153,7 @@ export default function UpdatePageInfo() {
 
   return (
     <div className="min-h-screen w-full relative bg-radial-aurora text-white container mx-auto">
-      <div className=" px-8 sm:px-4 py-8  relative z-10 w-2/3 mx-auto">
+      <div className=" px-4 sm:px-4 py-8  relative z-10 sm:w-2/3 mx-auto">
         <div className="w-full  space-y-6 bg-gradient-to-b from-white/3 to-white/2  border border-white/50 filter bg-blur-sm p-4  backdrop-blur-xl transition-transform  rounded-2xl">
           <h2 className="text-xl font-bold bg-blue-600 bg-clip-text text-transparent">
             Update Page Info

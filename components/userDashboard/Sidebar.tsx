@@ -141,7 +141,7 @@ export default function UserSidebar({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition 
+              className={`flex items-center gap-3 px-3 py-0.5 md:py-2 rounded-lg text-sm transition 
                 ${active
                   ? "bg-indigo-600 text-white shadow-md"
                   : "text-gray-200 hover:bg-white/5"
@@ -161,7 +161,7 @@ export default function UserSidebar({
             height={36}
             width={36}
             alt="home"
-            className="rounded"
+            className="rounded w-8 md:w-10"
           />
           <span>Home</span>
         </Link>

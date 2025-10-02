@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 export default function CtaButton() {
   const [showCTA, setShowCTA] = useState(false);
 
+  const token = typeof window !== "undefined"
+    ? localStorage.getItem("accessToken") : null;
   const router = useRouter();
   useEffect(() => {
     const handleScroll = () => {
@@ -29,7 +31,7 @@ export default function CtaButton() {
           <button
             className="ml-4 bg-white text-indigo-600 px-4 py-2 rounded-md font-medium
                  hover:bg-gray-100 transition cursor-pointer"
-            onClick={() => router.push("/configure-bot")}
+            onClick={() => router.push(token ? "/user-dashboard/configure-bot" : "/login")}
           >
             Configure Bot
           </button>

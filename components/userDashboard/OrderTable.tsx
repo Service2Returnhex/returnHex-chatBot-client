@@ -85,8 +85,6 @@ export default function OrdersTable({ orders, setOrders, loading, onView, onEdit
         [mutatingId, setOrders, fetchOrders]
     );
 
-
-
     return (
         <div className="p-2">
             <div className="card-bg p-5 rounded-lg shadow border border-gray-700">
@@ -112,7 +110,7 @@ export default function OrdersTable({ orders, setOrders, loading, onView, onEdit
                                     <tr key={o._id || idx} className="border-b border-gray-800 hover:bg-white/2 transition-colors align-top">
                                         {/* Customer */}
                                         <td className="p-3 align-top">
-                                            <div className="font-semibold text-white truncate max-w-[220px]" title={o.customerName}>
+                                            <div className="font-semibold text-white  max-w-[220px]" title={o.customerName}>
                                                 {o.customerName || "N/A"}
                                             </div>
                                         </td>
@@ -174,20 +172,12 @@ export default function OrdersTable({ orders, setOrders, loading, onView, onEdit
                                                 <div className="text-xs text-gray-400 mt-1">Address</div>
                                                 <div className="truncate">{o.address}</div>
                                                 <div className="text-xs text-gray-400 mt-1">Created</div>
-                                                <div className="truncate">{new Date(o.createdAt ?? "").toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka" })}</div>
+                                                <div className="truncate">{new Date(o.createdAt ?? "").toLocaleString()}</div>
                                             </div>
                                         </td>
 
                                         {/* Status */}
                                         <td className="p-3 align-top">
-                                            {/* <button
-                                                // onClick={() => onToggleStatus?.(o.orderId)}
-                                                className={`inline-flex items-center gap-2 px-2 py-1 text-xs font-medium rounded-full ${statusClasses(o.status)}`}
-                                                aria-label={`Order status: ${o.status}`}
-                                                title="Click to toggle status"
-                                            >
-                                                {o.status}
-                                            </button> */}
                                             <select
                                                 value={o.status}
                                                 onChange={(e) => handleChangeStatus(o._id ?? "", e.target.value as OrderStatus)}
@@ -282,7 +272,7 @@ export default function OrdersTable({ orders, setOrders, loading, onView, onEdit
                                         </div>
                                         <div>
                                             <dt className="text-xs text-gray-400">createdAt</dt>
-                                            <dd className="truncate">{new Date(o.createdAt ?? "").toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka" })}</dd>
+                                            <dd className="truncate">{new Date(o.createdAt ?? "").toLocaleString()}</dd>
                                         </div>
 
                                         <div className="flex gap-2 items-center">

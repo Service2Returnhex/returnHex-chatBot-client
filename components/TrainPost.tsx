@@ -43,7 +43,7 @@ export default function TrainPost() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [accessToken]);
   const fields = [
     "message",
     // request attachments and subattachments with description/title/media

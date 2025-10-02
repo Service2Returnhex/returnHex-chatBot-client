@@ -1,7 +1,7 @@
 "use client";
 import FormInput from "@/components/ui/FormInput";
 import axios from "axios";
-import { Image, Lock, Mail, MapPin, Phone, User, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, MapPin, Phone, User, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,9 +17,10 @@ const Signup = () => {
     image: "",
     role: "",
     password: "",
-    // confirmPassword: "",
+    confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,10 +41,10 @@ const Signup = () => {
       toast.error("Address is required");
       return;
     }
-    if (!formData.image) {
-      toast.error("Profile image is required");
-      return;
-    }
+    // if (!formData.image) {
+    //   toast.error("Profile image is required");
+    //   return;
+    // }
     if (!formData.role) {
       toast.error("Role is required");
       return;
@@ -52,7 +53,14 @@ const Signup = () => {
       toast.error("Password is required");
       return;
     }
-
+    if (!formData.confirmPassword) {
+      toast.error("confirmPassword is required");
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
     if (formData.password.length < 6) {
       toast.error("Password must be at least 6 characters long");
       return;
@@ -67,9 +75,10 @@ const Signup = () => {
           email: formData.email,
           contact: formData.contact,
           address: formData.address,
-          image: formData.image,
+          // image: formData.image,
           role: formData.role,
           password: formData.password,
+          confirmPassword: formData.confirmPassword,
         }
       );
       console.log("response", response);
@@ -165,7 +174,7 @@ const Signup = () => {
                 required
               />
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <FormInput
                 label="Profile Image"
                 name="image"
@@ -173,7 +182,7 @@ const Signup = () => {
                 onChange={handleChange}
                 icon={<Image className="h-5 w-5 text-gray-400" />}
               />
-            </div>
+            </div> */}
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
@@ -192,17 +201,17 @@ const Signup = () => {
                 <option value="user" className="card-bg text-gray-100">
                   User
                 </option>
-                <option value="admin" className="card-bg text-gray-100">
+                {/* <option value="admin" className="card-bg text-gray-100">
                   Admin
-                </option>
+                </option> */}
               </select>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <FormInput
                 label="Password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={handleChange}
                 className="glass-input pl-10 text-white placeholder:text-gray-400"
@@ -210,13 +219,26 @@ const Signup = () => {
                 icon={<Lock className="h-5 w-5 text-gray-400" />}
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute right-3 top-7 p-1"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-300 cursor-pointer" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-300 cursor-pointer" />
+                )}
+              </button>
             </div>
 
-            {/* <div className="space-y-2">
+            <div className="space-y-2 relative">
               <FormInput
                 label="Confirm Password"
                 name="confirmPassword"
-                type="password"
+                // type="password"
+                type={showPassword ? "text" : "password"}
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className="glass-input pl-10 text-white placeholder:text-gray-400"
@@ -224,7 +246,19 @@ const Signup = () => {
                 icon={<Lock className="h-5 w-5 text-gray-400" />}
                 required
               />
-            </div> */}
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute right-3 top-7 p-1"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-300 cursor-pointer" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-300 cursor-pointer" />
+                )}
+              </button>
+            </div>
 
             <button
               type="submit"

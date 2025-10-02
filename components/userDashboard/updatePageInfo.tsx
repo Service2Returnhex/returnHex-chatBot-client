@@ -106,7 +106,7 @@ export default function UpdatePageInfo({ id }: PageProps) {
                 if (data.success) {
                     setFormData((prev) => ({
                         ...prev,
-                        shopId: data.shopId,
+                        shopId: data.data.shopId,
                     }));
                 }
             })
