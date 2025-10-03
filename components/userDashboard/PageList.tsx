@@ -222,13 +222,11 @@ export default function PagesList() {
                     </td> */}
 
                     <td className="p-3 align-top text-sm text-gray-300">
-                      <div className="max-w-[350px]">
-
-
+                      <div className="max-w-[380px]">
                         <div className="flex items-center gap-3">
                           <div className="flex flex-col ">
                             <div className="text-xs text-gray-400">Acess Token</div>
-                            <span className="truncate  max-w-[300px] block break-words">
+                            <span className="truncate  max-w-[300px] xl:max-w-[400px] block break-words">
                               {page.accessToken}
                             </span>
                           </div>

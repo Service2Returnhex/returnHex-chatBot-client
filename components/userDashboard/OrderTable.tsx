@@ -1,5 +1,5 @@
 // components/adminDashboard/OrdersTable.tsx
-// "use client";
+"use client";
 
 import { IOrder, OrderStatus } from "@/types/order.type";
 import axios from "axios";
@@ -65,13 +65,14 @@ export default function OrdersTable({ orders, setOrders, loading, onView, onEdit
                 const token = localStorage.getItem("accessToken");
                 if (!token) throw new Error("Auth token not found");
 
-                await axios.patch(
+                const updateStatus = await axios.patch(
                     `${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/v1/page/shop/order/${encodeURIComponent(orderId)}`,
                     { status: newStatus },
                     { headers: { Authorization: `${token}` }, timeout: 10_000 }
                 );
-
+                console.log("updateStatus", updateStatus);
                 toast.success("Status updated");
+                return updateStatus;
             } catch (err: any) {
                 console.error(err);
                 // rollback
@@ -82,7 +83,7 @@ export default function OrdersTable({ orders, setOrders, loading, onView, onEdit
                 setMutatingId(null);
             }
         },
-        [mutatingId, setOrders, fetchOrders]
+        [mutatingId, fetchOrders]
     );
 
     return (
