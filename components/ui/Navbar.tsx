@@ -40,7 +40,7 @@ export default function Navbar({
   useEffect(() => {
     // check login from localStorage (or cookie, context, JWT, etc.)
     const token = typeof window !== "undefined"
-      ? localStorage.getItem("accessToken") : null;
+      ? localStorage.getItem("authToken") : null;
     if (!token) return;
     setIsLoggedIn(!!token);
     const decoded = jwtDecode<JwtPayload>(token);

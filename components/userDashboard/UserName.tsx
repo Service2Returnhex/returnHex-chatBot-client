@@ -11,7 +11,7 @@ export default function UserName() {
     useEffect(() => {
         // simulate fetch + small delay
         const token = typeof window !== "undefined"
-            ? localStorage.getItem("accessToken") : null;
+            ? localStorage.getItem("authToken") : null;
         if (!token) return;
 
         const decoded = jwtDecode<JwtPayload>(token);

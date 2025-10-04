@@ -41,8 +41,8 @@ const presetResponses: Record<string, string> = {
 };
 
 const CTAButton: React.FC<
-  React.PropsWithChildren<{ href: string; variant?: "primary" | "ghost" }>
-> = ({ href, children, variant = "primary" }) => {
+  React.PropsWithChildren<{ href: string; ariaLabel?: string; variant?: "primary" | "ghost" }>
+> = ({ href, children, ariaLabel, variant = "primary" }) => {
   return (
     <Link
       href={href}
@@ -50,7 +50,7 @@ const CTAButton: React.FC<
         ? "bg-indigo-600 text-white shadow-md hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0.5 "
         : "bg-white/10 text-white hover:bg-white/20"
         }`}
-      aria-label={`${children}`}
+      aria-label={ariaLabel ?? String(children)}
     >
       {children}
     </Link>
@@ -67,7 +67,7 @@ export default function HeroSection({ title, subtitle }: Props) {
   const [input, setInput] = useState("");
 
   const token = typeof window !== "undefined"
-    ? localStorage.getItem("accessToken") : null;
+    ? localStorage.getItem("authToken") : null;
   const handleSend = () => {
     if (!input.trim()) return;
 
@@ -92,6 +92,8 @@ export default function HeroSection({ title, subtitle }: Props) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages]);
+  const href = token ? "/user-dashboard/configure-bot" : "/login";
+  // const ariaLabel = token ? `Configure bot` : "Login";
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleSend();
   };
@@ -115,7 +117,7 @@ export default function HeroSection({ title, subtitle }: Props) {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4 items-center">
-              <CTAButton href={token ? "/user-dashboard/configure-bot" : "/login"} variant="primary">
+              <CTAButton href={href} variant="primary" aria-label="Configure Bot">
                 Configure Bot
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -132,7 +134,7 @@ export default function HeroSection({ title, subtitle }: Props) {
                 </svg>
               </CTAButton>
 
-              <CTAButton href="/" variant="ghost">
+              <CTAButton href="/" variant="ghost" >
                 Try Demo
               </CTAButton>
             </div>

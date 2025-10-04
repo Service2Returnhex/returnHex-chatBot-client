@@ -56,11 +56,11 @@ export default function PagesList() {
       setLoading(true);
       try {
         const token = typeof window !== "undefined"
-          ? localStorage.getItem("accessToken") : null;
+          ? localStorage.getItem("authToken") : null;
         if (!token) {
           toast.error("Please login first");
           return;
-        }
+        } 
 
         const decoded = jwtDecode<JwtPayload>(token);
         const ownerId = decoded.userId ?? decoded._id ?? decoded.id;
@@ -71,7 +71,7 @@ export default function PagesList() {
         }
 
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/shop/owner/${ownerId}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/shop/`,
           {
             headers: {
               Authorization: `${token}`,

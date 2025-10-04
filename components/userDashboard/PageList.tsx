@@ -55,7 +55,7 @@ export default function PagesList() {
       setLoading(true);
       try {
         const token = typeof window !== "undefined"
-          ? localStorage.getItem("accessToken") : null;
+          ? localStorage.getItem("authToken") : null;
         if (!token) {
           toast.error("Please login first");
           return;
@@ -83,7 +83,10 @@ export default function PagesList() {
           toast.error(res.data.message || "Failed to load pages");
           return;
         }
-
+        typeof window !== "undefined"
+          ? localStorage.setItem("accessToken", res.data.data[0].accessToken) : null;
+        typeof window !== "undefined"
+          ? localStorage.setItem("pageId", res.data.data[0].shopId) : null;
         if (mounted) {
           setPages(res.data.data as IPageInfo[]);
         }

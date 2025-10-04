@@ -41,15 +41,21 @@ const Signin = () => {
           password: formData.password,
         }
       );
+      console.log("login response", response);
       const token = response?.data?.data?.accessToken;
       if (token) {
         typeof window !== "undefined"
-          ? localStorage.setItem("accessToken", token) : null;
+          ? localStorage.setItem("authToken", token) : null;
       }
       const role = response?.data?.data?.userRole;
       if (role) {
         typeof window !== "undefined"
-        ? localStorage.setItem("user", JSON.stringify(role)) : null;
+          ? localStorage.setItem("user", JSON.stringify(role)) : null;
+      }
+      const pageId = response?.data?.data?.shopId;
+      if (pageId) {
+        typeof window !== "undefined"
+          ? localStorage.setItem("pageId", pageId) : null;
       }
       toast.success(response?.data?.message ?? "Logged in");
       if (role == "admin") {
@@ -65,6 +71,8 @@ const Signin = () => {
       setLoading(false);
     }
   };
+
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

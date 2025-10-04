@@ -201,9 +201,9 @@ const Signup = () => {
                 <option value="user" className="card-bg text-gray-100">
                   User
                 </option>
-                {/* <option value="admin" className="card-bg text-gray-100">
+                <option value="admin" className="card-bg text-gray-100">
                   Admin
-                </option> */}
+                </option>
               </select>
             </div>
 

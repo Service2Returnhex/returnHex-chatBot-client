@@ -43,9 +43,13 @@ export default function LogoutButton() {
 
             // Clear client storage
             typeof window !== "undefined"
+                ? localStorage.removeItem("authToken") : null;
+            typeof window !== "undefined"
                 ? localStorage.removeItem("accessToken") : null;
             typeof window !== "undefined"
                 ? localStorage.removeItem("user") : null;
+            typeof window !== "undefined"
+                ? localStorage.removeItem("pageId") : null;
 
             toast.success("Logged out");
             router.replace("/login");
@@ -53,11 +57,15 @@ export default function LogoutButton() {
             console.error("Logout error:", err?.response ?? err);
             // Clear local storage anyway
             typeof window !== "undefined"
+                ? localStorage.removeItem("authToken") : null;
+            typeof window !== "undefined"
                 ? localStorage.removeItem("accessToken") : null;
             typeof window !== "undefined"
                 ? localStorage.removeItem("user") : null;
+            typeof window !== "undefined"
+                ? localStorage.removeItem("pageId") : null;
             // If backend failed to clear cookie, you may need an additional call or server handling
-            toast.error("Logout failed, redirecting to login.");
+            toast.warn("window undefined, redirecting to login.");
             router.replace("/login");
         } finally {
             setLoading(false);

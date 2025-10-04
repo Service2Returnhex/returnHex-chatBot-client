@@ -53,7 +53,7 @@ export default function Orders() {
             setLoading(true);
             try {
                 const token = typeof window !== "undefined"
-                    ? localStorage.getItem("accessToken") : null;
+                    ? localStorage.getItem("authToken") : null;
                 if (!token) {
                     toast.error("Please login first");
                     return;
