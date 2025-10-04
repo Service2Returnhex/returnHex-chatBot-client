@@ -22,7 +22,7 @@ export default function layout({
 
   useEffect(() => {
     // simulate fetch + small delay
-    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
     if (!token) return;
 
     console.log("role", role);
