@@ -29,7 +29,7 @@ export default function PagesList() {
   const togglePage = async (pageId: string) => {
     try {
       const token = typeof window !== "undefined"
-        ? localStorage.getItem("accessToken") : null;
+        ? localStorage.getItem("authToken") : null;
       await axios.patch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/${pageId}/toggle-status`,
         {},

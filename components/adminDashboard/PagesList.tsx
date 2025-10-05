@@ -29,7 +29,7 @@ export default function PagesList() {
   const togglePage = async (pageId: string) => {
     try {
       const token = typeof window !== "undefined"
-        ? localStorage.getItem("accessToken") : null;
+        ? localStorage.getItem("authToken") : null;
       await axios.patch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/${pageId}/toggle-status`,
         {},
@@ -60,7 +60,7 @@ export default function PagesList() {
         if (!token) {
           toast.error("Please login first");
           return;
-        } 
+        }
 
         const decoded = jwtDecode<JwtPayload>(token);
         const ownerId = decoded.userId ?? decoded._id ?? decoded.id;
