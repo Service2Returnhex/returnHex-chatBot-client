@@ -1,11 +1,11 @@
 "use client";
 import { JwtPayload } from "@/types/jwtPayload.type";
-import { IPageInfo } from "@/types/pageInfo.type";
+import { connectionStatus, IPageInfo } from "@/types/pageInfo.type";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Clipboard } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import PageActions from "./PageActions";
 
@@ -14,15 +14,29 @@ export default function PagesList() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const [mutatingId, setMutatingId] = useState<string | null>(null);
+  const STATUS_OPTIONS: connectionStatus[] = ["pending", "start", "stop"];
 
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
       // replace with toast if you use one
-      // toast.success("Copied token");
+      toast.success("Copied to clipboard!");
       console.log("copied");
     } catch (err) {
       console.error("copy failed", err);
+    }
+  };
+  const statusClasses = (status: connectionStatus) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-600 text-black";
+      case "start":
+        return "bg-green-600 text-white";
+      case "stop":
+        return "bg-red-600 text-white";
+      default:
+        return "bg-gray-600 text-white";
     }
   };
 
@@ -39,7 +53,7 @@ export default function PagesList() {
       // update UI after success
       setPages((prev) =>
         prev.map((p) =>
-          p._id === pageId ? { ...p, isStarted: !p.isStarted } : p
+          p.shopId === pageId ? { ...p, isStarted: !p.isStarted } : p
         )
       );
     } catch (err) {
@@ -47,6 +61,38 @@ export default function PagesList() {
     }
   }
   // console.log("page null", pages);
+
+  const handlePageConnectionStatus = useCallback(
+    async (pageId: string, connectionStatus: connectionStatus) => {
+      if (mutatingId === pageId) return
+      let previousSnapshot: IPageInfo[] = []
+
+      setPages((prev) => {
+        previousSnapshot = prev
+        return prev.map((p) => p._id === pageId ? { ...p, connected: connectionStatus } : p)
+      })
+
+      try {
+        const token = localStorage.getItem("authToken")
+        if (!token) throw new Error("Auth Token not found")
+        const updatePageConnectionStatus = await axios.patch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/page/${pageId}/connected`,
+          { status: connectionStatus },
+          { headers: { Authorization: `${token}` }, timeout: 10_000 }
+        )
+        console.log("updatePageConnectionStatus", updatePageConnectionStatus);
+        toast.success("Page Status updated");
+        return updatePageConnectionStatus;
+
+      } catch (error) {
+        console.error(error);
+        // rollback
+        setPages(previousSnapshot);
+      } finally {
+        setMutatingId(null);
+      }
+    },
+    [mutatingId]
+  )
 
 
   useEffect(() => {
@@ -84,7 +130,7 @@ export default function PagesList() {
           toast.error(res.data.message || "Failed to load pages");
           return;
         }
-
+        console.log("page data", res.data.data);
         if (mounted) {
           setPages(res.data.data as IPageInfo[]);
         }
@@ -115,16 +161,15 @@ export default function PagesList() {
           {/* overflow wrapper — allows horizontal scroll without breaking layout */}
           <div className="overflow-x-auto -mx-5 pl-5">
             {/* Make table use fixed layout so truncation works predictably */}
-            <table className="w-full table-fixed text-left border-collapse min-w-full">
+            <table className="w-full divide-y  table-fixed text-left border-collapse min-w-full">
               <thead>
                 <tr className="border-b border-gray-700">
-                  <th className="p-3 text-sm font-medium text-gray-300 w-2/9">Page Name</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-2/9">Page ID</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-2/9">Owner Id</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-2/9">Access Token</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-1/9">Created</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-[90px]">Status</th>
-                  <th className="p-3 text-sm font-medium text-gray-300 w-[80px]">Actions</th>
+                  <th scope="col" className="p-3 text-left font-medium text-gray-300 w-[15%]">Page Name</th>
+                  <th scope="col" className="p-3 text-left font-medium text-gray-300 w-[20%]">Page ID / Owner Id</th>
+                  <th scope="col" className="p-3 text-left font-medium text-gray-300 w-[30%]">Access Token</th>
+                  <th scope="col" className="p-3 text-left font-medium text-gray-300 w-[15%]">Created</th>
+                  <th scope="col" className="p-3 text-left font-medium text-gray-300 w-[10%]">Status</th>
+                  <th scope="col" className="p-3 text-left font-medium text-gray-300 w-[10%]">Actions</th>
                 </tr>
               </thead>
 
@@ -140,21 +185,44 @@ export default function PagesList() {
                       </div>
                     </td>
 
-                    <td className="p-3 align-top text-sm text-gray-300">
-                      <div className="flex items-center gap-1">
-                        <div className="truncate max-w-[160px]">{page.shopId}</div>
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(page.shopId ?? "")}
-                          className="p-1 rounded text-gray-400 hover:text-white/90 hover:bg-white/5 cursor-pointer"
-                          aria-label="Copy token"
-                        >
-                          <Clipboard className="h-4 w-4" />
-                        </button>
+                    <td className="p-3 align-top text-sm text-gray-300 ">
+                      <div className="max-w-[300px]">
+                        <div className="flex items-center gap-1">
+                          <div className="flex flex-col ">
+                            <div className="text-xs text-gray-400">shopId Id</div>
+                            <div className="truncate max-w-[200px]">{page.shopId}</div>
+                          </div>
+                          {/* <div className="truncate max-w-[160px]">{page.shopId}</div> */}
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(page.shopId ?? "")}
+                            className="p-1 rounded text-gray-400 hover:text-white/90 hover:bg-white/5 cursor-pointer"
+                            aria-label="Copy token"
+                          >
+                            <Clipboard className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="flex flex-col ">
+                            <div className="text-xs text-gray-400">Owner Id</div>
+                            <div className="truncate max-w-[200px]">{page.ownerId}</div>
+                          </div>
+                          {/* <span className="truncate max-w-[160px] block break-words">
+                          {page?.ownerId}
+                        </span> */}
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(page.ownerId ?? "")}
+                            className="p-1 rounded text-gray-400 hover:text-white/90 hover:bg-white/5 cursor-pointer"
+                            aria-label="Copy token"
+                          >
+                            <Clipboard className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
                     </td>
 
-                    <td className="p-3 align-top text-sm text-gray-300">
+                    {/* <td className="p-3 align-top text-sm text-gray-300">
                       <div className="flex items-center gap-3">
                         <span className="truncate max-w-[160px] block break-words">
                           {page?.ownerId}
@@ -168,9 +236,9 @@ export default function PagesList() {
                           <Clipboard className="h-4 w-4" />
                         </button>
                       </div>
-                    </td>
+                    </td> */}
 
-                    <td className="p-3 align-top text-sm text-gray-300">
+                    <td className="p-3 align-top text-sm text-gray-300 ">
                       <div className="flex items-center gap-3">
                         <span className="truncate max-w-[300px] block break-words">
                           {page.accessToken}
@@ -187,32 +255,52 @@ export default function PagesList() {
                     </td>
 
                     <td className="p-3 align-top text-sm text-gray-300">
-                      <div className="truncate max-w-[140px]">{page.createdAt}</div>
+                      <div className="truncate max-w-[140px]">{new Date(page.createdAt ?? "").toLocaleString()}</div>
                     </td>
 
-                    <td className="p-3 align-top cursor-pointer" onClick={() => togglePage(page._id)}>
-                      <span
-                        role="status"
-                        aria-label={page.isStarted ? "Started" : "Not started"}
-                        title={page.isStarted ? "Started" : "Not started"}
-                        className={`inline-flex items-center gap-2 px-3 py-1 text-xs font-medium rounded-full ${page.isStarted ? "bg-green-600 text-white" : "bg-red-600 text-white"
-                          }`}
-                      >
-                        <span
+                    <td className="p-3  align-top cursor-pointer" >
+                      <div className="gap-2 flex flex-col">
+                        <div onClick={() => togglePage(page.shopId ?? "")}>
+                          <span
+                            role="status"
+                            aria-label={page.isStarted ? "Started" : "Not started"}
+                            title={page.isStarted ? "Started" : "Not started"}
+                            className={`inline-flex items-center gap-2 px-3 py-1 text-xs font-medium rounded-full ${page.isStarted ? "bg-green-600 text-white" : "bg-red-600 text-white"
+                              }`}
+                          >
+                            <span
 
-                          aria-hidden
-                          className={`w-2 h-2 rounded-full ${page.isStarted ? "bg-white/90" : "bg-white/90"}`}
-                        />
-                        {page.isStarted ? "Started" : "Not started"}
-                      </span>
+                              aria-hidden
+                              className={`w-2 h-2 rounded-full ${page.isStarted ? "bg-white/90" : "bg-white/90"}`}
+                            />
+                            {page.isStarted ? "Started" : "Not started"}
+                          </span>
+                        </div>
+
+                        <div className="align-top ">
+                          <select
+                            value={page.connected}
+                            onChange={(e) => handlePageConnectionStatus(page._id ?? "", e.target.value as connectionStatus)}
+                            disabled={mutatingId === page._id}
+                            className={`inline-flex items-center gap-2 px-2 py-1 text-xs font-medium rounded-full ${statusClasses(page.connected)}`}
+                          >
+                            {STATUS_OPTIONS.map((s) => (
+                              <option key={s} value={s} className="custom-card-bg text-white ">
+                                {s}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
                     </td>
+
 
                     <td className="p-3 align-top relative cursor-pointer items-center flex justify-center">
                       <PageActions
                         page={page}
                         onEdit={(p) => {
                           console.log("Edit:", p);
-                          router.push(`/admin-dashboard/update-pageInfo`);
+                          router.push(`/admin-dashboard/update-pageInfo/${p.shopId}`);
                         }}
                         onView={(p) => {
                           console.log("View:", p);
@@ -245,19 +333,42 @@ export default function PagesList() {
                       {page.pageName}
                     </h3>
 
-                    {/* Status badge */}
-                    <span
-                      role="status"
-                      aria-label={`Status ${page.isStarted ? "Started" : "Not Started"}`}
-                      className={`self-start sm:self-auto inline-flex items-center text-xs px-3 py-1 rounded-full ${page.isStarted ? "bg-green-600 text-white" : "bg-red-600 text-white"
-                        }`}
-                    >
-                      <span
-                        aria-hidden
-                        className={`inline-block w-2 h-2 rounded-full mr-2 ${page.isStarted ? "bg-white" : "bg-white"}`}
-                      />
-                      {page.isStarted ? "Started" : "Not Started"}
-                    </span>
+                    <div className="flex gap-2 text-center">
+                      {/* Status badge */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-gray-400">Bot Reply</div>
+
+                        {/* Status badge */}
+                        <span
+                          role="status"
+                          aria-label={`Status ${page.isStarted ? "Started" : "Not Started"}`}
+                          className={`self-start sm:self-auto inline-flex items-center text-xs px-3 py-1 rounded-full ${page.isStarted ? "bg-green-600 text-white" : "bg-red-600 text-white"
+                            }`}
+                        >
+                          <span
+                            aria-hidden
+                            className={`inline-block w-2 h-2 rounded-full mr-2 ${page.isStarted ? "bg-white" : "bg-white"}`}
+                          />
+                          {page.isStarted ? "Started" : "Not Started"}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-gray-400">Connection</div>
+                        <select
+                          value={page.connected}
+                          onChange={(e) => handlePageConnectionStatus(page._id ?? "", e.target.value as connectionStatus)}
+                          disabled={mutatingId === page._id}
+                          className={`inline-flex items-center gap-2 px-2 py-1 text-xs font-medium rounded-full ${statusClasses(page.connected)}`}
+                        >
+                          {STATUS_OPTIONS.map((s) => (
+                            <option key={s} value={s} className="custom-card-bg text-white ">
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
 
                   <dl className="mt-3 grid grid-cols-1 gap-2 text-sm text-gray-300">

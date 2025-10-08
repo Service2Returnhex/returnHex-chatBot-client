@@ -42,28 +42,27 @@ export default function LogoutButton() {
             );
 
             // Clear client storage
-            typeof window !== "undefined"
-                ? localStorage.removeItem("authToken") : null;
-            typeof window !== "undefined"
-                ? localStorage.removeItem("accessToken") : null;
-            typeof window !== "undefined"
-                ? localStorage.removeItem("user") : null;
-            typeof window !== "undefined"
-                ? localStorage.removeItem("pageId") : null;
+            if (typeof window !== "undefined") {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("pageId");
+                localStorage.removeItem("user");
+                localStorage.removeItem("webHookURL");
+            }
+
 
             toast.success("Logged out");
             router.replace("/login");
         } catch (err: any) {
             console.error("Logout error:", err?.response ?? err);
             // Clear local storage anyway
-            typeof window !== "undefined"
-                ? localStorage.removeItem("authToken") : null;
-            typeof window !== "undefined"
-                ? localStorage.removeItem("accessToken") : null;
-            typeof window !== "undefined"
-                ? localStorage.removeItem("user") : null;
-            typeof window !== "undefined"
-                ? localStorage.removeItem("pageId") : null;
+            if (typeof window !== "undefined") {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("pageId");
+                localStorage.removeItem("user");
+                localStorage.removeItem("webHookURL");
+            }
             // If backend failed to clear cookie, you may need an additional call or server handling
             toast.warn("window undefined, redirecting to login.");
             router.replace("/login");

@@ -1,6 +1,6 @@
 "use client";
 import FormInput from "@/components/ui/FormInput";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Eye, EyeOff, Lock, Mail, MapPin, Phone, User, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -89,8 +89,10 @@ const Signup = () => {
         ? localStorage.setItem("user", JSON.stringify(response.data.user)) : null;
       toast.success("Account created successfully!");
       router.push("/login");
-    } catch (error) {
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
       console.error("Signup error:", error);
+      toast.error(error?.response?.data?.message)
     } finally {
       setLoading(false);
     }

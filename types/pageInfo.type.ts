@@ -1,3 +1,5 @@
+export type connectionStatus = "stop" | "pending" | "start";
+
 export interface IPageInfo {
   _id: string;
   pageName: string;
@@ -13,6 +15,7 @@ export interface IPageInfo {
   cmntSystemPromt?: string;
   isVerified?: boolean;
   isStarted?: boolean;
+  connected: connectionStatus;
   accessToken?: string;
   verifyToken?: string;
   createdAt?: string;

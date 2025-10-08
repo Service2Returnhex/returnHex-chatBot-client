@@ -163,7 +163,7 @@ export default function OrdersTable({ orders, setOrders, loading, onView, onEdit
                                                 <div className="text-xs text-gray-400 mt-1">Payment</div>
                                                 <div className="truncate">{o.paymentMethod}</div>
                                             </div>
-                                        </td>
+                                        </td>   
 
                                         {/* Contact / Address */}
                                         <td className="p-3 align-top text-sm text-gray-300">
@@ -191,7 +191,6 @@ export default function OrdersTable({ orders, setOrders, loading, onView, onEdit
                                                     </option>
                                                 ))}
                                             </select>
-
                                         </td>
 
                                         {/* Actions */}
