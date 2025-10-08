@@ -15,7 +15,7 @@ const Signup = () => {
     contact: "",
     address: "",
     image: "",
-    role: "",
+    role: "user",
     password: "",
     confirmPassword: "",
   });
@@ -45,10 +45,10 @@ const Signup = () => {
     //   toast.error("Profile image is required");
     //   return;
     // }
-    if (!formData.role) {
-      toast.error("Role is required");
-      return;
-    }
+    // if (!formData.role) {
+    //   toast.error("Role is required");
+    //   return;
+    // }
     if (!formData.password) {
       toast.error("Password is required");
       return;
@@ -83,10 +83,10 @@ const Signup = () => {
       );
       console.log("response", response);
 
-      typeof window !== "undefined"
-        ? localStorage.setItem("authToken", response.data.token) : null;
-      typeof window !== "undefined"
-        ? localStorage.setItem("user", JSON.stringify(response.data.user)) : null;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+      }
       toast.success("Account created successfully!");
       router.push("/login");
     } catch (err) {
@@ -186,7 +186,7 @@ const Signup = () => {
               />
             </div> */}
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Role
               </label>
@@ -207,7 +207,7 @@ const Signup = () => {
                   Admin
                 </option>
               </select>
-            </div>
+            </div> */}
 
             <div className="space-y-2 relative">
               <FormInput
