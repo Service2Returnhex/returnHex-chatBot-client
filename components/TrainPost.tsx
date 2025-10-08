@@ -2,14 +2,13 @@
 import { TPost } from "@/types/post.type";
 import { TTrainedPost } from "@/types/trainedPost.type";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { PostCardNotTrained, PostCardTrained } from "./PostCard";
 import { FormField } from "./ui/FormField";
+import { extractImageCaptions } from "@/utility/extractImageCaptions";
 
 export default function TrainPost() {
-  const router = useRouter();
   const [pageId, setPageId] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [posts, setPosts] = useState([]);
@@ -46,20 +45,12 @@ export default function TrainPost() {
   }, [accessToken]);
   const fields = [
     "message",
-    // request attachments and subattachments with description/title/media
     "created_time", "attachments{media_type,media,description,title,subattachments{media,description,title,target}}",
   ].join(",");
 
   const fetchPosts = async () => {
     if (!pageId || !accessToken) return;
     setLoading(true);
-
-
-    // const url = `https://graph.facebook.com/v19.0/${pageId}/posts`;
-    // const response = await axios.get(url, {
-    //   params: { fields, access_token: accessToken },
-    //   timeout: 10000,
-    // });
     try {
       const response = await axios.get(
         `https://graph.facebook.com/v19.0/${pageId}/posts?access_token=${accessToken}`,
@@ -99,51 +90,24 @@ export default function TrainPost() {
       setTrainLoading(post.id);
       console.log("post image", post);
 
-      // Build images[] from common shapes. Adapt to your post shape.
-      const images: Array<{ url: string; caption?: string; embedding?: number[]; phash?: string }> = [];
+      const imagesDescription = post
+      ? await extractImageCaptions(post)
+      : ([] as { photoId?: string; url?: string; caption?: string }[]);
+    
+      console.log("imagesDescription", imagesDescription);
 
-      // Example: attachments array with media.image.src
-      if (Array.isArray((post as any).attachments) && (post as any).attachments.length > 0) {
-        for (const att of (post as any).attachments) {
-          const url =
-            (att.media && att.media.image && att.media.image.src) ||
-            att.media?.image?.uri ||
-            att.url ||
-            att.src ||
-            att.image ||
-            "";
-          if (!url) continue;
-          const caption = att.title ?? att.caption ?? att.alt_text ?? post.message ?? "";
-          images.push({ url: String(url), caption: String(caption) });
-        }
-      }
-
-      // Example: if post.images array exists
-      if (images.length === 0 && Array.isArray((post as any).images) && (post as any).images.length > 0) {
-        for (const img of (post as any).images) {
-          const url = img.url ?? img.src ?? "";
-          if (!url) continue;
-          images.push({ url: String(url), caption: img.caption ?? post.message ?? "" });
-        }
-      }
-
-      // Fallback to full_picture single-image
-      if (images.length === 0 && post.full_picture) {
-        images.push({ url: String(post.full_picture), caption: post.message ?? "" });
-      }
-
-      // FINAL payload: include shopId/postId + the raw post + normalized images
-      const payload = {
-        shopId: pageId,
-        postId: post.id,
-        message: post.message ?? "",
-        summarizedMsg: post.summarizedMsg ?? "",
-        aggregatedEmbedding: post.aggregatedEmbedding ?? [],
-        full_picture: post.full_picture ?? (images[0]?.url ?? ""),
-        createdAt: post.created_time ?? new Date().toISOString(),
-        images,
-        rawPost: post,
-      };
+      const payload: any = {
+      postId: post.id,
+      shopId: pageId,
+      message: post?.message as string,
+      createdAt: post.created_time,
+      updatedAt: new Date(),
+      images: imagesDescription.map((img) => ({
+        photoId: img.photoId ? img.photoId : post.id.split('_')[1],
+        url: img.url,
+        caption: img.caption,
+      })),
+    };
 
       console.debug("train payload", payload);
 
