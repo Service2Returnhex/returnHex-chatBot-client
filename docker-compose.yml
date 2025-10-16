@@ -7,9 +7,6 @@ services:
     ports:
       - "3000:3000"
     env_file: ./.env
-    volumes:
-      - ./:/app
-      - /app/node_modules
     networks:
       - bot-client
     restart: always
