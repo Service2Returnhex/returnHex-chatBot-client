@@ -1,0 +1,35 @@
+name: CI/CD - Deploy Chatbot Client
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: github.event_name == 'push' || (github.event.pull_request.merged == true)
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Latest Code
+        run: |
+          cd ~/chatbot/client
+          git fetch --all
+          git pull origin main
+
+      - name: Rebuild & Restart Docker Container
+        run: |
+          cd ~/chatbot/client
+
+          # Stop and remove old container (if running)
+          if [ "$(docker ps -q -f name=client-chatbot)" ]; then
+            docker stop client-chatbot
+            docker rm client-chatbot
+          fi
+
+          # Rebuild and start using docker-compose
+          docker compose up --build -d

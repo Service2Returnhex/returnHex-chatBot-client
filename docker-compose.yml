@@ -1,0 +1,11 @@
+services:
+  botserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: client-chatbot
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    restart: always
